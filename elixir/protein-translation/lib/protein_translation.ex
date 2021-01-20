@@ -11,6 +11,9 @@ defmodule ProteinTranslation do
   @codon_length ~r/.{3}/
 
 
+
+  # some stuff
+
   @doc """
   Given an RNA string, return a list of proteins specified by codons, in order.
   """
