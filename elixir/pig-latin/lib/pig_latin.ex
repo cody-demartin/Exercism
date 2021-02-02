@@ -1,28 +1,37 @@
 defmodule PigLatin do
-
-
   @vowels ["a", "e", "i", "o", "u"]
-  @doc """
-  Given a `phrase`, translate it a word at a time to Pig Latin.
-
-  Words beginning with consonants should have the consonant moved to the end of
-  the word, followed by "ay".
-
-  Words beginning with vowels (aeiou) should have "ay" added to the end of the
-  word.
-
-  Some groups of letters are treated like consonants, including "ch", "qu",
-  "squ", "th", "thr", and "sch".
-
-  Some groups are treated like vowels, including "yt" and "xr".
-  """
   @spec translate(phrase :: String.t()) :: String.t()
   def translate(phrase) do
-    start = String.at(phrase, 0)
+    phrase
+    |> String.split
+    |> Enum.map(&pig_latin(&1))
+    |> Enum.join(" ")
+  end
 
+  defp pig_latin(word) do
     cond do
-      Enum.member?(@vowels, start) ->
-        phrase <> "ay"
+      String.starts_with?(word, @vowels) or x_or_y?(word) ->
+        word <> "ay"
+      String.contains?(word, "qu") -> qu(word) <> "ay"
+      true -> consonants(word) <> "ay"
     end
+  end
+
+  defp x_or_y?(word) do
+    String.first(word) in ["y", "x"] and String.at(word, 1) not in @vowels
+  end
+
+  defp qu(word) do
+    [ head | tail ] = word
+    |> String.split(~R/[{qu}?]/, include_captures: true, trim: true)
+    |> Enum.reverse()
+
+    [head | Enum.reverse(tail)]
+    |> Enum.join()
+  end
+
+  defp consonants(word) do
+    [ head | tail ] = String.split(word, ~R/[a|e|i|o|u|y|x1?]/,include_captures: true, trim: true)
+    Enum.join(tail ++ [head])
   end
 end
