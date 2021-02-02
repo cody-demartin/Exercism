@@ -3,7 +3,7 @@ defmodule PigLatin do
   @spec translate(phrase :: String.t()) :: String.t()
   def translate(phrase) do
     phrase
-    |> String.split
+    |> String.split()
     |> Enum.map(&pig_latin(&1))
     |> Enum.join(" ")
   end
@@ -12,8 +12,12 @@ defmodule PigLatin do
     cond do
       String.starts_with?(word, @vowels) or x_or_y?(word) ->
         word <> "ay"
-      String.contains?(word, "qu") -> qu(word) <> "ay"
-      true -> consonants(word) <> "ay"
+
+      String.contains?(word, "qu") ->
+        qu(word) <> "ay"
+
+      true ->
+        consonants(word) <> "ay"
     end
   end
 
@@ -22,16 +26,17 @@ defmodule PigLatin do
   end
 
   defp qu(word) do
-    [ head | tail ] = word
-    |> String.split(~R/[{qu}?]/, include_captures: true, trim: true)
-    |> Enum.reverse()
+    [head | tail] =
+      word
+      |> String.split(~R/[{qu}?]/, include_captures: true, trim: true)
+      |> Enum.reverse()
 
     [head | Enum.reverse(tail)]
     |> Enum.join()
   end
 
   defp consonants(word) do
-    [ head | tail ] = String.split(word, ~R/[a|e|i|o|u|y|x1?]/,include_captures: true, trim: true)
+    [head | tail] = String.split(word, ~R/[a|e|i|o|u|y|x1?]/, include_captures: true, trim: true)
     Enum.join(tail ++ [head])
   end
 end
